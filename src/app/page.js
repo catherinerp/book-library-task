@@ -1,95 +1,90 @@
-import Image from "next/image";
+"use client";
+
 import styles from "./page.module.css";
+import { books } from "./data";
+import React from "react";
+import {
+  Switch,
+  Button,
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell
+ } from "@nextui-org/react";
 
 export default function Home() {
+  const [page, setPage] = React.useState(1);
+  const rowsPerPage = 4;
+
+  const toggleAvailability = (id) => {};
+
+  const pages = Math.ceil(books.length / rowsPerPage);
+
+  const items = React.useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    return books.slice(start, end);
+  }, [page, books]);
+
+  const addRow = () => {};
+
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
+      <h1>SoSage Library</h1><br/>
+      <div className={styles.searchBarContainer}>
+            Book Search: 
+            <input className={styles.searchBar} placeholder="Search..."></input>
+              <p className="text-small text-default-500">{page} of {pages}</p><div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="flat"
+                  color="secondary"
+                  onPress={() => setPage((prev) => (prev > 1 ? prev - 1 : prev))}
+                  disabled={page === 1}
+                >
+                  {"<-"}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="flat"
+                  color="secondary"
+                  onPress={() => setPage((prev) => (prev < pages ? prev + 1 : prev))}
+                  disabled={page === pages}
+                >
+                  {"->"}
+                </Button>
+                </div>
+                </div>
+                <div className={styles.tableWrapper}>
+      <Table classNames={{ wrapper: "min-h-[222px]" }}>
+        <TableHeader>
+          <TableColumn key="book">BOOK</TableColumn>
+          <TableColumn key="owner">OWNER</TableColumn>
+          <TableColumn key="availability">AVAILABILITY</TableColumn>
+        </TableHeader>
+        <TableBody items={items}>
+          {(item) => (
+            <TableRow key={item.id}>
+              {(columnKey) => (
+                <TableCell>
+                  {columnKey === "availability" ? (
+                    <Switch defaultChecked={item.availability} onChange={() => toggleAvailability(item.id)}>
+                      {item.availability ? "Available" : "Not Available"}
+                    </Switch>
+                  ) : (
+                    item[columnKey]
+                  )}
+                </TableCell>
+              )}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
       </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+    <button onClick={addRow}>Add Book</button>
     </main>
   );
 }
