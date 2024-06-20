@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "./page.module.css";
-import { books } from "./data";
+import { initialBooks } from "./data";
 import React from "react";
 import {
   Switch,
@@ -16,9 +16,17 @@ import {
 
 export default function Home() {
   const [page, setPage] = React.useState(1);
+  const [books, setBooks] = React.useState(initialBooks);
   const rowsPerPage = 4;
 
-  const toggleAvailability = (id) => {};
+  const toggleReturnBorrow = (id) => {
+    setBooks(books => {
+      return books.map(books => books.id === id ? ({
+        ...books,
+        availability: !books.availability
+      }): books)
+    })
+  };
 
   const pages = Math.ceil(books.length / rowsPerPage);
 
@@ -29,7 +37,7 @@ export default function Home() {
     return books.slice(start, end);
   }, [page, books]);
 
-  const addRow = () => {};
+  const addBook = () => {};
 
   return (
     <main className={styles.main}>
@@ -37,8 +45,36 @@ export default function Home() {
       <div className={styles.searchBarContainer}>
             Book Search: 
             <input className={styles.searchBar} placeholder="Search..."></input>
-              <p className="text-small text-default-500">{page} of {pages}</p><div className="flex gap-2">
-                <Button
+              <div className="flex gap-2">
+                </div>
+                </div>
+                <div className={styles.tableWrapper}>
+      <Table classNames={{ wrapper: "min-h-[222px]" }}>
+        <TableHeader>
+          <TableColumn key="book">BOOK</TableColumn>
+          <TableColumn key="owner">OWNER</TableColumn>
+          <TableColumn key="availability">AVAILABILITY</TableColumn>
+        </TableHeader>
+        <TableBody items={items}>
+          {(item) => (
+            <TableRow key={item.id}>
+              {(columnKey) => (
+                <TableCell>
+                  {columnKey === "availability" ? (
+                    <Switch isSelected={item.availability} onChange={() => toggleReturnBorrow(item.id)}>
+                      {item.availability ? "Available" : "Not Available"}
+                    </Switch>
+                  ) : (
+                    item[columnKey]
+                  )}
+                </TableCell>
+              )}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+      </div>
+      <Button
                   size="sm"
                   variant="flat"
                   color="secondary"
@@ -56,35 +92,10 @@ export default function Home() {
                 >
                   {"->"}
                 </Button>
-                </div>
-                </div>
-                <div className={styles.tableWrapper}>
-      <Table classNames={{ wrapper: "min-h-[222px]" }}>
-        <TableHeader>
-          <TableColumn key="book">BOOK</TableColumn>
-          <TableColumn key="owner">OWNER</TableColumn>
-          <TableColumn key="availability">AVAILABILITY</TableColumn>
-        </TableHeader>
-        <TableBody items={items}>
-          {(item) => (
-            <TableRow key={item.id}>
-              {(columnKey) => (
-                <TableCell>
-                  {columnKey === "availability" ? (
-                    <Switch defaultChecked={item.availability} onChange={() => toggleAvailability(item.id)}>
-                      {item.availability ? "Available" : "Not Available"}
-                    </Switch>
-                  ) : (
-                    item[columnKey]
-                  )}
-                </TableCell>
-              )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-      </div>
-    <button onClick={addRow}>Add Book</button>
+                <p className="text-small text-default-500">{page} of {pages}</p>
+      <Button color="primary" onClick={addBook}>
+      Add Book
+    </Button>
     </main>
   );
 }

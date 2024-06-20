@@ -1,4 +1,4 @@
-export const books = [
+export const initialBooks = [
     {
       id: 1,
       book: "The Great Gatsby",
